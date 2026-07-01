@@ -6,6 +6,24 @@ import { firstValueFrom } from 'rxjs';
 export class PokemonService {
   constructor(private readonly httpService: HttpService) {}
 
+  async findAll(limit: number, offset: number) {
+    const response = await firstValueFrom(
+      this.httpService.get('https://pokeapi.co/api/v2/pokemon', {
+        params: {
+          limit,
+          offset,
+        },
+      }),
+    );
+
+    return {
+      count: response.data.count,
+      limit,
+      offset,
+      results: response.data.results,
+    };
+  }
+
   async findOne(nameOrId: string) {
     try {
       const response = await firstValueFrom(
