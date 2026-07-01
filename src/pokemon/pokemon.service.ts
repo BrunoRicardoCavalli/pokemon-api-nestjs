@@ -24,6 +24,27 @@ export class PokemonService {
     };
   }
 
+  async findByType(type: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `https://pokeapi.co/api/v2/type/${type.toLowerCase()}`,
+        ),
+      );
+
+      return {
+        type: response.data.name,
+        total: response.data.pokemon.length,
+        pokemons: response.data.pokemon.map((item) => ({
+          name: item.pokemon.name,
+          url: item.pokemon.url,
+        })),
+      };
+    } catch {
+      throw new NotFoundException('Tipo de Pokémon não encontrado');
+    }
+  }
+
   async findOne(nameOrId: string) {
     try {
       const response = await firstValueFrom(

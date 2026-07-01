@@ -10,6 +10,11 @@ export class PokemonController {
     return this.pokemonService.findAll(Number(limit), Number(offset));
   }
 
+  @Get('type/:type')
+  findByType(@Param('type') type: string) {
+    return this.pokemonService.findByType(type);
+  }
+
   @Get(':nameOrId')
   findOne(@Param('nameOrId') nameOrId: string) {
     return this.pokemonService.findOne(nameOrId);
