@@ -45,6 +45,12 @@ export class PokemonService {
     }
   }
 
+  async findRandom() {
+    const randomId = Math.floor(Math.random() * 1025) + 1;
+
+    return this.findOne(randomId.toString());
+  }
+
   async findOne(nameOrId: string) {
     try {
       const response = await firstValueFrom(

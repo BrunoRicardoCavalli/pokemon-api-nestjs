@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
+import { get } from 'node_modules/axios/index.cjs';
 
 @Controller('pokemon')
 export class PokemonController {
@@ -13,6 +14,11 @@ export class PokemonController {
   @Get('type/:type')
   findByType(@Param('type') type: string) {
     return this.pokemonService.findByType(type);
+  }
+
+  @Get('random')
+  findRandom() {
+    return this.pokemonService.findRandom();
   }
 
   @Get(':nameOrId')
