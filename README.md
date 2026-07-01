@@ -1,73 +1,186 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Pokémon API - NestJS
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST desenvolvida como solução para o Case Técnico de Desenvolvedor Backend Jr da Leany.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A aplicação foi construída utilizando **NestJS** e realiza integração com a **PokéAPI**, permitindo consultar informações sobre Pokémon, listar Pokémon com paginação, pesquisar por tipo e obter um Pokémon aleatório.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tecnologias utilizadas
 
-## Installation
+- NestJS
+- TypeScript
+- Axios
+- Swagger
+- PokéAPI
 
-```bash
-$ npm install
-```
+---
 
-## Running the app
+## Funcionalidades
+
+- Listagem de Pokémon com paginação
+- Busca de Pokémon por nome ou ID
+- Busca de Pokémon por tipo
+- Retorno de um Pokémon aleatório
+- Documentação automática utilizando Swagger
+- Tratamento de erros para recursos inexistentes
+
+---
+
+## Instalação
+
+Clone o repositório:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/BrunoRicardoCavalli/pokemon-api-nestjs.git
 ```
 
-## Test
+Entre na pasta:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cd pokemon-api-nestjs
 ```
 
-## Support
+Instale as dependências:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm install
+```
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Executando o projeto
 
-## License
+Modo desenvolvimento:
 
-Nest is [MIT licensed](LICENSE).
+```bash
+npm run start:dev
+```
+
+A aplicação ficará disponível em:
+
+```
+http://localhost:3000
+```
+
+---
+
+## Documentação da API
+
+Após iniciar o projeto, acesse:
+
+```
+http://localhost:3000/api
+```
+
+A documentação Swagger permite testar todos os endpoints diretamente pelo navegador.
+
+---
+
+## Endpoints
+
+### Listar Pokémon
+
+```
+GET /pokemon
+```
+
+Exemplo:
+
+```
+GET /pokemon?limit=10&offset=0
+```
+
+---
+
+### Buscar Pokémon por nome ou ID
+
+```
+GET /pokemon/{nameOrId}
+```
+
+Exemplos:
+
+```
+GET /pokemon/pikachu
+
+GET /pokemon/25
+```
+
+---
+
+### Buscar Pokémon por tipo
+
+```
+GET /pokemon/type/{type}
+```
+
+Exemplo:
+
+```
+GET /pokemon/type/fire
+```
+
+---
+
+### Pokémon aleatório
+
+```
+GET /pokemon/random
+```
+
+---
+
+## Tratamento de erros
+
+Caso um Pokémon ou tipo não exista, a API retorna:
+
+```
+404 Not Found
+```
+
+---
+
+## Estrutura do projeto
+
+```
+src/
+│
+├── main.ts
+├── app.module.ts
+│
+└── pokemon/
+    ├── pokemon.controller.ts
+    ├── pokemon.module.ts
+    ├── pokemon.service.ts
+```
+
+---
+
+## Arquitetura
+
+A aplicação segue a arquitetura recomendada pelo NestJS:
+
+```
+Controller
+        │
+        ▼
+Service
+        │
+        ▼
+PokéAPI
+```
+
+O Controller é responsável por receber as requisições HTTP, enquanto o Service concentra toda a lógica de negócio e comunicação com a PokéAPI.
+
+---
+
+## Autor
+
+Bruno Ricardo Cavalli
+
+GitHub:
+https://github.com/BrunoRicardoCavalli
+
+LinkedIn:
+https://www.linkedin.com/in/bruno-cavalli/
