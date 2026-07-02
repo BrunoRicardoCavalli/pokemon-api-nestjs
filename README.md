@@ -1,33 +1,116 @@
-# Pokémon API - NestJS
+# Pokémon Teams API - NestJS
 
-API REST desenvolvida como solução para o Case Técnico de Desenvolvedor Backend Jr da Leany.
+API REST desenvolvida como solução para o **Case Técnico de Desenvolvedor Backend Jr da Leany**.
 
-A aplicação foi construída utilizando **NestJS** e realiza integração com a **PokéAPI**, permitindo consultar informações sobre Pokémon, listar Pokémon com paginação, pesquisar por tipo e obter um Pokémon aleatório.
+A aplicação foi construída utilizando **NestJS**, **PostgreSQL** e **TypeORM**, permitindo o gerenciamento de treinadores, seus times de Pokémon e os Pokémon pertencentes a cada time.
+
+Os dados dos treinadores, times e equipes são persistidos localmente no PostgreSQL, enquanto as informações dos Pokémon são obtidas em tempo real através da **PokéAPI**.
 
 ---
 
-## Tecnologias utilizadas
+# Tecnologias utilizadas
 
 - NestJS
 - TypeScript
+- PostgreSQL
+- TypeORM
+- Docker
 - Axios
-- Swagger
+- Swagger (OpenAPI)
+- class-validator
+- class-transformer
 - PokéAPI
 
 ---
 
-## Funcionalidades
+# Funcionalidades
 
-- Listagem de Pokémon com paginação
-- Busca de Pokémon por nome ou ID
-- Busca de Pokémon por tipo
-- Retorno de um Pokémon aleatório
-- Documentação automática utilizando Swagger
-- Tratamento de erros para recursos inexistentes
+### Treinadores
+
+- Criar treinador
+- Listar treinadores
+- Buscar treinador por ID
+- Atualizar treinador
+- Remover treinador
+
+### Times
+
+- Criar time para um treinador
+- Listar times de um treinador
+- Buscar time por ID
+- Atualizar time
+- Remover time
+
+### Pokémon
+
+- Adicionar Pokémon ao time
+- Remover Pokémon do time
+- Listar Pokémon do time
+- Buscar Pokémon por nome ou ID
+- Buscar Pokémon por tipo
+- Retornar Pokémon aleatório
+
+### Regras de negócio
+
+- Um treinador pode possuir vários times.
+- Um time pertence a apenas um treinador.
+- Um time pode conter no máximo **6 Pokémon**.
+- Antes de adicionar um Pokémon ao time é realizada uma validação na PokéAPI para verificar se ele realmente existe.
+- Ao listar os Pokémon do time, a API retorna informações enriquecidas diretamente da PokéAPI.
 
 ---
 
-## Instalação
+# Tecnologias e Arquitetura
+
+A aplicação segue a arquitetura em camadas recomendada pelo NestJS.
+
+```
+Controller
+      │
+      ▼
+Service
+      │
+      ├── PostgreSQL (TypeORM)
+      │
+      └── PokéAPI
+```
+
+Cada camada possui responsabilidade única:
+
+- **Controllers** recebem as requisições HTTP.
+- **Services** concentram toda a regra de negócio.
+- **Repositories (TypeORM)** realizam a comunicação com o banco de dados.
+- **PokéAPI** fornece os dados completos dos Pokémon.
+
+---
+
+# Banco de Dados
+
+A aplicação utiliza **PostgreSQL** executando através do Docker.
+
+## docker-compose.yml
+
+```bash
+docker compose up -d
+```
+
+---
+
+# Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=pokemon_teams
+```
+
+---
+
+# Instalação
 
 Clone o repositório:
 
@@ -47,140 +130,131 @@ Instale as dependências:
 npm install
 ```
 
----
+Suba o banco utilizando Docker:
 
-## Executando o projeto
+```bash
+docker compose up -d
+```
 
-Modo desenvolvimento:
+Execute a aplicação:
 
 ```bash
 npm run start:dev
 ```
 
-A aplicação ficará disponível em:
-
-```
-http://localhost:3000
-```
-
 ---
 
-## Documentação da API
+# Documentação
 
-Após iniciar o projeto, acesse:
+Após iniciar a aplicação:
 
 ```
 http://localhost:3000/api
 ```
 
-A documentação Swagger permite testar todos os endpoints diretamente pelo navegador.
+Toda a documentação está disponível através do **Swagger**.
 
 ---
 
-## Endpoints
+# Principais Endpoints
 
-### Listar Pokémon
+## Trainer
+
+```
+POST   /trainers
+GET    /trainers
+GET    /trainers/{id}
+PATCH  /trainers/{id}
+DELETE /trainers/{id}
+```
+
+---
+
+## Team
+
+```
+POST   /trainers/{trainerId}/teams
+GET    /trainers/{trainerId}/teams
+GET    /teams/{id}
+PATCH  /teams/{id}
+DELETE /teams/{id}
+```
+
+---
+
+## Team Pokémon
+
+```
+POST   /teams/{teamId}/pokemons
+GET    /teams/{teamId}/pokemons
+DELETE /teams/{teamId}/pokemons/{pokemonTeamId}
+```
+
+---
+
+## Pokémon
 
 ```
 GET /pokemon
-```
-
-Exemplo:
-
-```
-GET /pokemon?limit=10&offset=0
-```
-
----
-
-### Buscar Pokémon por nome ou ID
-
-```
+GET /pokemon/random
 GET /pokemon/{nameOrId}
-```
-
-Exemplos:
-
-```
-GET /pokemon/pikachu
-
-GET /pokemon/25
-```
-
----
-
-### Buscar Pokémon por tipo
-
-```
 GET /pokemon/type/{type}
 ```
 
-Exemplo:
-
-```
-GET /pokemon/type/fire
-```
-
 ---
 
-### Pokémon aleatório
+# Estrutura do Projeto
 
 ```
-GET /pokemon/random
-```
-
----
-
-## Tratamento de erros
-
-Caso um Pokémon ou tipo não exista, a API retorna:
-
-```
-404 Not Found
-```
-
----
-
-## Estrutura do projeto
-
-```
-src/
+src
 │
-├── main.ts
+├── pokemon
+├── trainer
+├── team
+├── team-pokemon
+│
 ├── app.module.ts
-│
-└── pokemon/
-    ├── pokemon.controller.ts
-    ├── pokemon.module.ts
-    ├── pokemon.service.ts
+└── main.ts
 ```
 
 ---
 
-## Arquitetura
+# Validações
 
-A aplicação segue a arquitetura recomendada pelo NestJS:
+A API utiliza:
 
-```
-Controller
-        │
-        ▼
-Service
-        │
-        ▼
-PokéAPI
-```
+- ValidationPipe Global
+- class-validator
+- class-transformer
 
-O Controller é responsável por receber as requisições HTTP, enquanto o Service concentra toda a lógica de negócio e comunicação com a PokéAPI.
+As entradas são validadas automaticamente antes de chegarem aos serviços.
 
 ---
 
-## Autor
+# Integração com a PokéAPI
 
-Bruno Ricardo Cavalli
+A aplicação realiza consultas à PokéAPI para:
 
-GitHub:
+- Validar se um Pokémon existe.
+- Buscar nome.
+- Buscar tipos.
+- Buscar habilidades.
+- Buscar sprite (imagem).
+
+Documentação oficial:
+
+https://pokeapi.co/
+
+---
+
+# Autor
+
+**Bruno Ricardo Cavalli**
+
+GitHub
+
 https://github.com/BrunoRicardoCavalli
 
-LinkedIn:
+LinkedIn
+
 https://www.linkedin.com/in/bruno-cavalli/
