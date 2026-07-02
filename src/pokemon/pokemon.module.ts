@@ -6,9 +6,8 @@ import { PokemonService } from './pokemon.service';
 
 @Module({
   imports: [HttpModule],
-
   controllers: [PokemonController],
-
   providers: [PokemonService],
+  exports: [PokemonService],
 })
 export class PokemonModule {}

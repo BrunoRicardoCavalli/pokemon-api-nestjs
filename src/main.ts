@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -5,11 +6,21 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
   const config = new DocumentBuilder()
-    .setTitle('Pokemon API')
-    .setDescription('API backend desenvolvida em NestJS consumindo a PokéAPI')
+    .setTitle('Pokemon Teams API')
+    .setDescription('API para gerenciamento de treinadores, times e Pokémon')
     .setVersion('1.0')
     .addTag('pokemon')
+    .addTag('trainers')
+    .addTag('teams')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -64,6 +64,7 @@ export class PokemonService {
         name: response.data.name,
         height: response.data.height,
         weight: response.data.weight,
+        sprite: response.data.sprites.front_default,
         types: response.data.types.map((item) => item.type.name),
         abilities: response.data.abilities.map((item) => item.ability.name),
       };
