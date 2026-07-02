@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
-import { get } from 'node_modules/axios/index.cjs';
 
 @Controller('pokemon')
 export class PokemonController {
