@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateTrainerDto } from './dto/create-trainer.dto';
+import { TrainerResponseDto } from './dto/trainer-response.dto';
 import { UpdateTrainerDto } from './dto/update-trainer.dto';
 import { Trainer } from './entities/trainer.entity';
 
@@ -13,16 +14,51 @@ export class TrainerService {
     private readonly trainerRepository: Repository<Trainer>,
   ) {}
 
-  create(createTrainerDto: CreateTrainerDto) {
+  async create(
+    createTrainerDto: CreateTrainerDto,
+  ): Promise<TrainerResponseDto> {
     const trainer = this.trainerRepository.create(createTrainerDto);
-    return this.trainerRepository.save(trainer);
+    const savedTrainer = await this.trainerRepository.save(trainer);
+
+    return this.toResponseDto(savedTrainer);
   }
 
-  findAll() {
-    return this.trainerRepository.find();
+  async findAll(): Promise<TrainerResponseDto[]> {
+    const trainers = await this.trainerRepository.find();
+
+    return trainers.map((trainer) => this.toResponseDto(trainer));
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<TrainerResponseDto> {
+    const trainer = await this.findEntityById(id);
+
+    return this.toResponseDto(trainer);
+  }
+
+  async update(
+    id: number,
+    updateTrainerDto: UpdateTrainerDto,
+  ): Promise<TrainerResponseDto> {
+    const trainer = await this.findEntityById(id);
+
+    Object.assign(trainer, updateTrainerDto);
+
+    const updatedTrainer = await this.trainerRepository.save(trainer);
+
+    return this.toResponseDto(updatedTrainer);
+  }
+
+  async remove(id: number): Promise<{ message: string }> {
+    const trainer = await this.findEntityById(id);
+
+    await this.trainerRepository.remove(trainer);
+
+    return {
+      message: 'Treinador removido com sucesso',
+    };
+  }
+
+  private async findEntityById(id: number): Promise<Trainer> {
     const trainer = await this.trainerRepository.findOne({
       where: { id },
     });
@@ -34,21 +70,11 @@ export class TrainerService {
     return trainer;
   }
 
-  async update(id: number, updateTrainerDto: UpdateTrainerDto) {
-    const trainer = await this.findOne(id);
-
-    Object.assign(trainer, updateTrainerDto);
-
-    return this.trainerRepository.save(trainer);
-  }
-
-  async remove(id: number) {
-    const trainer = await this.findOne(id);
-
-    await this.trainerRepository.remove(trainer);
-
+  private toResponseDto(trainer: Trainer): TrainerResponseDto {
     return {
-      message: 'Treinador removido com sucesso',
+      id: trainer.id,
+      name: trainer.name,
+      cityOrigin: trainer.cityOrigin,
     };
   }
 }
