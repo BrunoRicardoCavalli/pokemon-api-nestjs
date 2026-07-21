@@ -16,16 +16,23 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Pokemon Teams API')
-    .setDescription('API para gerenciamento de treinadores, times e Pokémon')
+    .setDescription(
+      'API para gerenciamento de treinadores, times e Pokémon, com integração à PokéAPI.',
+    )
     .setVersion('1.0')
-    .addTag('pokemon')
-    .addTag('trainers')
-    .addTag('teams')
+    .addTag('Pokemon', 'Consultas de Pokémon realizadas na PokéAPI')
+    .addTag('Trainers', 'Gerenciamento de treinadores')
+    .addTag('Teams', 'Gerenciamento dos times dos treinadores')
+    .addTag('Team Pokémon', 'Gerenciamento dos Pokémon associados a cada time')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'Pokemon Teams API',
+  });
 
   await app.listen(3000);
 }
+
 bootstrap();
