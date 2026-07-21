@@ -39,11 +39,22 @@ export class TeamPokemonService {
       throw new BadRequestException('Um time pode ter no máximo 6 Pokémon');
     }
 
-    // Valida se existe na PokéAPI
-    await this.pokemonService.findOne(dto.pokemonIdentifier);
+    const normalizedIdentifier = dto.pokemonIdentifier.trim().toLowerCase();
+
+    const pokemonAlreadyExists = team.pokemons.some(
+      (pokemon) =>
+        pokemon.pokemonIdentifier.trim().toLowerCase() === normalizedIdentifier,
+    );
+
+    if (pokemonAlreadyExists) {
+      throw new BadRequestException('Este Pokémon já pertence ao time');
+    }
+
+    // Valida se o Pokémon existe na PokéAPI
+    await this.pokemonService.findOne(normalizedIdentifier);
 
     const teamPokemon = this.teamPokemonRepository.create({
-      pokemonIdentifier: dto.pokemonIdentifier,
+      pokemonIdentifier: normalizedIdentifier,
       team,
     });
 

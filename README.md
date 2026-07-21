@@ -2,13 +2,13 @@
 
 API REST desenvolvida como solução para o **Case Técnico de Desenvolvedor Backend Jr da Leany**.
 
-A aplicação foi construída utilizando **NestJS**, **PostgreSQL** e **TypeORM**, permitindo o gerenciamento de treinadores, seus times de Pokémon e os Pokémon pertencentes a cada time.
+A aplicação foi construída utilizando **NestJS**, **TypeScript**, **PostgreSQL** e **TypeORM**, permitindo o gerenciamento de treinadores, seus times e os Pokémon pertencentes a cada equipe.
 
-Os dados dos treinadores, times e equipes são persistidos localmente no PostgreSQL, enquanto as informações dos Pokémon são obtidas em tempo real através da **PokéAPI**.
+Os dados dos treinadores e times são persistidos em um banco PostgreSQL, enquanto as informações dos Pokémon são obtidas em tempo real através da **PokéAPI**.
 
 ---
 
-# Tecnologias utilizadas
+# Tecnologias Utilizadas
 
 - NestJS
 - TypeScript
@@ -17,6 +17,7 @@ Os dados dos treinadores, times e equipes são persistidos localmente no Postgre
 - Docker
 - Axios
 - Swagger (OpenAPI)
+- Jest
 - class-validator
 - class-transformer
 - PokéAPI
@@ -25,7 +26,7 @@ Os dados dos treinadores, times e equipes são persistidos localmente no Postgre
 
 # Funcionalidades
 
-### Treinadores
+## Treinadores
 
 - Criar treinador
 - Listar treinadores
@@ -33,7 +34,7 @@ Os dados dos treinadores, times e equipes são persistidos localmente no Postgre
 - Atualizar treinador
 - Remover treinador
 
-### Times
+## Times
 
 - Criar time para um treinador
 - Listar times de um treinador
@@ -41,46 +42,54 @@ Os dados dos treinadores, times e equipes são persistidos localmente no Postgre
 - Atualizar time
 - Remover time
 
-### Pokémon
+## Pokémon
 
 - Adicionar Pokémon ao time
 - Remover Pokémon do time
 - Listar Pokémon do time
 - Buscar Pokémon por nome ou ID
 - Buscar Pokémon por tipo
-- Retornar Pokémon aleatório
-
-### Regras de negócio
-
-- Um treinador pode possuir vários times.
-- Um time pertence a apenas um treinador.
-- Um time pode conter no máximo **6 Pokémon**.
-- Antes de adicionar um Pokémon ao time é realizada uma validação na PokéAPI para verificar se ele realmente existe.
-- Ao listar os Pokémon do time, a API retorna informações enriquecidas diretamente da PokéAPI.
+- Retornar um Pokémon aleatório
 
 ---
 
-# Tecnologias e Arquitetura
+# Regras de Negócio
+
+- Um treinador pode possuir vários times.
+- Um time pertence a apenas um treinador.
+- Cada time pode conter no máximo **6 Pokémon**.
+- Não é permitido adicionar Pokémon inexistentes.
+- Antes da inclusão, a API consulta a PokéAPI para validar o Pokémon informado.
+- Ao listar um time, os dados dos Pokémon são enriquecidos utilizando a PokéAPI.
+- Não é permitido adicionar o mesmo Pokémon duas vezes ao mesmo time.
+
+---
+
+# Arquitetura
 
 A aplicação segue a arquitetura em camadas recomendada pelo NestJS.
 
 ```
-Controller
-      │
-      ▼
-Service
-      │
-      ├── PostgreSQL (TypeORM)
-      │
-      └── PokéAPI
+                HTTP Request
+                     │
+                     ▼
+              Controllers
+                     │
+                     ▼
+                Services
+              ┌─────────────┐
+              │             │
+              ▼             ▼
+        PostgreSQL      PokéAPI
+        (TypeORM)      (Axios)
 ```
 
 Cada camada possui responsabilidade única:
 
 - **Controllers** recebem as requisições HTTP.
-- **Services** concentram toda a regra de negócio.
-- **Repositories (TypeORM)** realizam a comunicação com o banco de dados.
-- **PokéAPI** fornece os dados completos dos Pokémon.
+- **Services** implementam as regras de negócio.
+- **Repositories (TypeORM)** realizam a persistência dos dados.
+- **PokéAPI** fornece as informações completas dos Pokémon.
 
 ---
 
@@ -88,7 +97,7 @@ Cada camada possui responsabilidade única:
 
 A aplicação utiliza **PostgreSQL** executando através do Docker.
 
-## docker-compose.yml
+Inicie o banco:
 
 ```bash
 docker compose up -d
@@ -96,7 +105,7 @@ docker compose up -d
 
 ---
 
-# Variáveis de ambiente
+# Variáveis de Ambiente
 
 Crie um arquivo `.env` na raiz do projeto:
 
@@ -130,7 +139,7 @@ Instale as dependências:
 npm install
 ```
 
-Suba o banco utilizando Docker:
+Suba o banco:
 
 ```bash
 docker compose up -d
@@ -144,7 +153,7 @@ npm run start:dev
 
 ---
 
-# Documentação
+# Documentação da API
 
 Após iniciar a aplicação:
 
@@ -152,13 +161,13 @@ Após iniciar a aplicação:
 http://localhost:3000/api
 ```
 
-Toda a documentação está disponível através do **Swagger**.
+A documentação completa está disponível através do **Swagger**.
 
 ---
 
-# Principais Endpoints
+# Endpoints
 
-## Trainer
+## Trainers
 
 ```
 POST   /trainers
@@ -168,9 +177,7 @@ PATCH  /trainers/{id}
 DELETE /trainers/{id}
 ```
 
----
-
-## Team
+## Teams
 
 ```
 POST   /trainers/{trainerId}/teams
@@ -180,8 +187,6 @@ PATCH  /teams/{id}
 DELETE /teams/{id}
 ```
 
----
-
 ## Team Pokémon
 
 ```
@@ -189,8 +194,6 @@ POST   /teams/{teamId}/pokemons
 GET    /teams/{teamId}/pokemons
 DELETE /teams/{teamId}/pokemons/{pokemonTeamId}
 ```
-
----
 
 ## Pokémon
 
@@ -227,7 +230,7 @@ A API utiliza:
 - class-validator
 - class-transformer
 
-As entradas são validadas automaticamente antes de chegarem aos serviços.
+Todas as entradas são validadas automaticamente antes da execução das regras de negócio.
 
 ---
 
@@ -235,7 +238,7 @@ As entradas são validadas automaticamente antes de chegarem aos serviços.
 
 A aplicação realiza consultas à PokéAPI para:
 
-- Validar se um Pokémon existe.
+- Validar se o Pokémon existe.
 - Buscar nome.
 - Buscar tipos.
 - Buscar habilidades.
@@ -247,14 +250,51 @@ https://pokeapi.co/
 
 ---
 
+# Testes
+
+O projeto possui testes unitários utilizando **Jest**.
+
+Executar todos os testes:
+
+```bash
+npm test
+```
+
+Resultado esperado:
+
+```
+Test Suites: 8 passed, 8 total
+Tests:       12 passed, 12 total
+```
+
+Gerar o build da aplicação:
+
+```bash
+npm run build
+```
+
+---
+
+# Melhorias Implementadas
+
+- Arquitetura em camadas utilizando NestJS.
+- Integração com API externa (PokéAPI).
+- DTOs para entrada e saída de dados.
+- Validação automática utilizando ValidationPipe.
+- Tratamento de exceções.
+- Documentação com Swagger.
+- Testes unitários utilizando Jest.
+- Mocks das dependências externas nos testes.
+- Validação para impedir Pokémon duplicados no mesmo time.
+
+---
+
 # Autor
 
 **Bruno Ricardo Cavalli**
 
-GitHub
-
+GitHub:  
 https://github.com/BrunoRicardoCavalli
 
-LinkedIn
-
+LinkedIn:  
 https://www.linkedin.com/in/bruno-cavalli/
